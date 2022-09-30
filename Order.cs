@@ -4,7 +4,7 @@ namespace csharp_ecommerce_db
     internal class Order
     {
         public int OrderId { get; set; }
-        public DateOnly Date { get; set; }
+        public DateTime Date { get; set; }
         public decimal Amount { get; set; }
         public string Status { get; set; }
         //foreign keys

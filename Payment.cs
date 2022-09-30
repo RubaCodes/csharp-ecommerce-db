@@ -4,7 +4,8 @@ namespace csharp_ecommerce_db
 {
     internal class Payment
     {
-        public DateOnly Date { get; set; }
+        public int PaymentId { get; set; }
+        public DateTime Date { get; set; }
         public decimal Amount { get; set; }
         public string Status { get; set; }
         //foreign keys
