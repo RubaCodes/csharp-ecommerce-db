@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace csharp_ecommerce_db.Migrations
 {
     [DbContext(typeof(ECommerceContext))]
-    [Migration("20220930142052_InitialCreate")]
+    [Migration("20220930145247_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -84,13 +84,13 @@ namespace csharp_ecommerce_db.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CustomerID")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeID")
+                    b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -99,9 +99,9 @@ namespace csharp_ecommerce_db.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.HasIndex("CustomerID");
+                    b.HasIndex("CustomerId");
 
-                    b.HasIndex("EmployeeID");
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Orders");
                 });
@@ -136,11 +136,11 @@ namespace csharp_ecommerce_db.Migrations
 
             modelBuilder.Entity("csharp_ecommerce_db.Product", b =>
                 {
-                    b.Property<int>("ProductID")
+                    b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"), 1L, 1);
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -153,22 +153,37 @@ namespace csharp_ecommerce_db.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("ProductID");
+                    b.HasKey("ProductId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("OrderProduct", b =>
+                {
+                    b.Property<int>("OrdersOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductsProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrdersOrderId", "ProductsProductId");
+
+                    b.HasIndex("ProductsProductId");
+
+                    b.ToTable("OrderProduct");
                 });
 
             modelBuilder.Entity("csharp_ecommerce_db.Order", b =>
                 {
                     b.HasOne("csharp_ecommerce_db.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerID")
+                        .WithMany("Orders")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("csharp_ecommerce_db.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeID")
+                        .WithMany("Orders")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -180,12 +195,42 @@ namespace csharp_ecommerce_db.Migrations
             modelBuilder.Entity("csharp_ecommerce_db.Payment", b =>
                 {
                     b.HasOne("csharp_ecommerce_db.Order", "Order")
-                        .WithMany()
+                        .WithMany("Payments")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("OrderProduct", b =>
+                {
+                    b.HasOne("csharp_ecommerce_db.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrdersOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("csharp_ecommerce_db.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("csharp_ecommerce_db.Customer", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("csharp_ecommerce_db.Employee", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("csharp_ecommerce_db.Order", b =>
+                {
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,12 +8,12 @@ namespace csharp_ecommerce_db
         public decimal Amount { get; set; }
         public string Status { get; set; }
         //foreign keys
-        public int CustomerID { get; set; }
+        public int CustomerId { get; set; }
         public Customer Customer { get; set; }
-        public int EmployeeID { get; set; }
+        public int EmployeeId { get; set; }
         public Employee Employee { get; set; }  
         // liste
-        List<Payment> Payments {get; set; }
-        List<Product> Products { get; set; }
+        public List<Payment> Payments {get; set; }
+        public List<Product> Products { get; set; }
     }
 }

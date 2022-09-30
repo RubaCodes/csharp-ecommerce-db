@@ -43,7 +43,7 @@ namespace csharp_ecommerce_db.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    ProductID = table.Column<int>(type: "int", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -51,7 +51,7 @@ namespace csharp_ecommerce_db.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.ProductID);
+                    table.PrimaryKey("PK_Products", x => x.ProductId);
                 });
 
             migrationBuilder.CreateTable(
@@ -63,23 +63,47 @@ namespace csharp_ecommerce_db.Migrations
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerID = table.Column<int>(type: "int", nullable: false),
-                    EmployeeID = table.Column<int>(type: "int", nullable: false)
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.OrderId);
                     table.ForeignKey(
-                        name: "FK_Orders_Customers_CustomerID",
-                        column: x => x.CustomerID,
+                        name: "FK_Orders_Customers_CustomerId",
+                        column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "CustomerId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Orders_Employees_EmployeeID",
-                        column: x => x.EmployeeID,
+                        name: "FK_Orders_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
                         principalTable: "Employees",
                         principalColumn: "EmployeeId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderProduct",
+                columns: table => new
+                {
+                    OrdersOrderId = table.Column<int>(type: "int", nullable: false),
+                    ProductsProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderProduct", x => new { x.OrdersOrderId, x.ProductsProductId });
+                    table.ForeignKey(
+                        name: "FK_OrderProduct_Orders_OrdersOrderId",
+                        column: x => x.OrdersOrderId,
+                        principalTable: "Orders",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderProduct_Products_ProductsProductId",
+                        column: x => x.ProductsProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -106,14 +130,19 @@ namespace csharp_ecommerce_db.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_CustomerID",
-                table: "Orders",
-                column: "CustomerID");
+                name: "IX_OrderProduct_ProductsProductId",
+                table: "OrderProduct",
+                column: "ProductsProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_EmployeeID",
+                name: "IX_Orders_CustomerId",
                 table: "Orders",
-                column: "EmployeeID");
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_EmployeeId",
+                table: "Orders",
+                column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_OrderId",
@@ -123,6 +152,9 @@ namespace csharp_ecommerce_db.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "OrderProduct");
+
             migrationBuilder.DropTable(
                 name: "Payments");
 
